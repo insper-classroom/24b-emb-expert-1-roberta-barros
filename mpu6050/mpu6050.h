@@ -1,38 +1,57 @@
-#ifndef _MPU6050_H
-#define _MPU6050_H
+#ifndef MPU6050_H
+#define MPU6050_H
 
 #include "hardware/i2c.h"
 #include "pico/stdlib.h"
 
-// MPU6050 I2C address
-#define MPU6050_I2C_ADDR 0x68
+#define MPU6050_I2C_ADDRESS 0x68
 
-// Accelerometer ranges
-#define MPU6050_ACC_RANGE_2G  0x00
-#define MPU6050_ACC_RANGE_4G  0x08
-#define MPU6050_ACC_RANGE_8G  0x10
-#define MPU6050_ACC_RANGE_16G 0x18
+#define MPU6050_REG_SMPLRT_DIV     0x19
+#define MPU6050_REG_CONFIG         0x1A
+#define MPU6050_REG_GYRO_CONFIG    0x1B
+#define MPU6050_REG_ACCEL_CONFIG   0x1C
+#define MPU6050_REG_INT_ENABLE     0x38
+#define MPU6050_REG_ACCEL_XOUT_H   0x3B
+#define MPU6050_REG_ACCEL_XOUT_L   0x3C
+#define MPU6050_REG_ACCEL_YOUT_H   0x3D
+#define MPU6050_REG_ACCEL_YOUT_L   0x3E
+#define MPU6050_REG_ACCEL_ZOUT_H   0x3F
+#define MPU6050_REG_ACCEL_ZOUT_L   0x40
+#define MPU6050_REG_TEMP_OUT_H     0x41
+#define MPU6050_REG_TEMP_OUT_L     0x42
+#define MPU6050_REG_GYRO_XOUT_H    0x43
+#define MPU6050_REG_GYRO_XOUT_L    0x44
+#define MPU6050_REG_GYRO_YOUT_H    0x45
+#define MPU6050_REG_GYRO_YOUT_L    0x46
+#define MPU6050_REG_GYRO_ZOUT_H    0x47
+#define MPU6050_REG_GYRO_ZOUT_L    0x48
+#define MPU6050_REG_PWR_MGMT_1     0x6B
+#define MPU6050_REG_WHO_AM_I       0x75
 
-// Function return values
-#define MPU6050_OK     1
-#define MPU6050_ERROR  0
+#define MPU6050_ACCEL_SCALE_2G     0
+#define MPU6050_ACCEL_SCALE_4G     1
+#define MPU6050_ACCEL_SCALE_8G     2
+#define MPU6050_ACCEL_SCALE_16G    3
+#define MPU6050_GYRO_SCALE_250DEG  0
+#define MPU6050_GYRO_SCALE_500DEG  1
+#define MPU6050_GYRO_SCALE_1000DEG 2
+#define MPU6050_GYRO_SCALE_2000DEG 3
 
-// Configuration structure
 typedef struct {
     i2c_inst_t *i2c;
     uint sda_pin;
     uint scl_pin;
-    uint baudrate;
-    uint8_t acc_scale;
-} mpu6050_t;
 
-// Function prototypes
-void mpu6050_set_config(mpu6050_t *config, i2c_inst_t *i2c, uint sda_pin, uint scl_pin, uint8_t acc_scale);
-int mpu6050_init(mpu6050_t *config);
-int mpu6050_reset(mpu6050_t *config);
-int mpu6050_read_acc(mpu6050_t *config, int16_t accel[3]);
-int mpu6050_read_gyro(mpu6050_t *config, int16_t gyro[3]);
-int mpu6050_read_temp(mpu6050_t *config, int16_t *temp);
-int mpu6050_set_motion_detection(mpu6050_t *config, uint8_t threshold, uint8_t duration);
+    uint8_t accel_scale;
 
-#endif // _MPU6050_H
+    uint8_t gyro_scale;
+} mpu6050_config_t;
+
+void mpu6050_set_config(mpu6050_config_t *config, i2c_inst_t *i2c, uint sda_pin, uint scl_pin, uint8_t accel_scale, uint8_t gyro_scale);
+int mpu6050_init(const mpu6050_config_t *config);
+int mpu6050_reset(const mpu6050_config_t *config);
+int mpu6050_read_acc(const mpu6050_config_t *config, int16_t accel[3]);
+int mpu6050_read_gyro(const mpu6050_config_t *config, int16_t gyro[3]);
+int mpu6050_read_temp(const mpu6050_config_t *config, int16_t *temp);
+
+#endif 
