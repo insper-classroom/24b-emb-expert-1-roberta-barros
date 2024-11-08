@@ -1,9 +1,14 @@
 #include <stdio.h>
+#include <string.h> 
 #include "pico/stdlib.h"
 #include "mpu6050.h"
 
+#define ACCEL_SCALE_FACTOR 16384.0 // ajuste conforme o valor de escala de acelerômetro
+#define GYRO_SCALE_FACTOR 131.0    // ajuste conforme o valor de escala de giroscópio
+
 int main() {
     stdio_init_all();
+    printf("Início\n");
 
     mpu6050_config_t mpu_config;
     mpu6050_set_config(&mpu_config, i2c0, 4, 5, MPU6050_ACCEL_SCALE_2G, MPU6050_GYRO_SCALE_250DEG);
@@ -19,13 +24,21 @@ int main() {
 
     while (true) {
         if (mpu6050_read_acc(&mpu_config, accel)) {
-            printf("Accel X: %f, Y: %f, Z: %f\n", accel[0], accel[1], accel[2]);
+            // Converte os valores do acelerômetro para float
+            float accel_x = accel[0] / ACCEL_SCALE_FACTOR;
+            float accel_y = accel[1] / ACCEL_SCALE_FACTOR;
+            float accel_z = accel[2] / ACCEL_SCALE_FACTOR;
+            printf("Accel X: %.2f, Y: %.2f, Z: %.2f\n", accel_x, accel_y, accel_z);
         } else {
             printf("Falha no acelerômetro\n");
         }
 
         if (mpu6050_read_gyro(&mpu_config, gyro)) {
-            printf("Gyro X: %f, Y: %f, Z: %f\n", gyro[0], gyro[1], gyro[2]);
+            // Converte os valores do giroscópio para float
+            float gyro_x = gyro[0] / GYRO_SCALE_FACTOR;
+            float gyro_y = gyro[1] / GYRO_SCALE_FACTOR;
+            float gyro_z = gyro[2] / GYRO_SCALE_FACTOR;
+            printf("Gyro X: %.2f, Y: %.2f, Z: %.2f\n", gyro_x, gyro_y, gyro_z);
         } else {
             printf("Falha no giroscópio\n");
         }
